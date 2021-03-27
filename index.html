@@ -15,7 +15,6 @@
 
       button {
         border: none;
-        background-color: #08746c;
         color: white;
         font-size: 24px;
         padding: 16px;
@@ -23,8 +22,35 @@
         cursor: pointer;
       }
 
+      .add-book {
+        background-color: #08746c;
+      }
+
       .empty-heading {
         font-style: italic;
+      }
+
+      ul {
+        padding: 0;
+      }
+
+      li {
+        list-style-type: none;
+        padding: 10px 20px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        position: relative;
+        margin: 15px 0;
+        max-width: 300px;
+      }
+
+      .delete-book {
+        background-color: #dc3545;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 16px;
+        padding: 10px;
       }
     </style>
   </head>
@@ -38,7 +64,7 @@
         <h2 class="empty-heading">Your library is empty</h2>
       </section>
 
-      <button>Add book</button>
+      <button class="add-book">Add book</button>
     </main>
 
     <script>
@@ -48,13 +74,38 @@
 
       // model
       const model = {
-        books: [],
+        uuid: 5,
+        books: [
+          {
+            uuid: 2,
+            title: "Harry Potter",
+            author: "JK Rowling",
+          },
+          {
+            uuid: 3,
+            title: "Made to Stick",
+            author: "Chip and Dan Heath",
+          },
+          {
+            uuid: 4,
+            title: "Outliers",
+            author: "Malcom Gladwell",
+          },
+        ],
         addBook: () => {
           const title = prompt("What is the title?");
           const author = prompt(`Who authored ${title}?`);
 
-          model.books.push({ title, author });
+          model.books.push({
+            uuid: model.uuid,
+            title,
+            author,
+          });
+
+          model.uuid++;
         },
+        deleteBook: (uuid) =>
+          (model.books = model.books.filter((b) => b.uuid !== uuid)),
       };
 
       // View
@@ -65,10 +116,19 @@
         const authorElement = document.createElement("h4");
         authorElement.innerHTML = book.author;
 
+        const deleteButton = document.createElement("button");
+        deleteButton.innerHTML = "X";
+        deleteButton.addEventListener("click", () => {
+          model.deleteBook(book.uuid);
+          renderLibrary();
+        });
+        deleteButton.classList.add("delete-book");
+
         const li = document.createElement("li");
 
         li.appendChild(titleElement);
         li.appendChild(authorElement);
+        li.appendChild(deleteButton);
 
         return li;
       };
@@ -90,6 +150,8 @@
         model.addBook();
         renderLibrary();
       });
+
+      renderLibrary();
     </script>
   </body>
 </html>
